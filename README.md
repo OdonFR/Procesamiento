@@ -1,9 +1,9 @@
 
-# codigosEnArbol
+# Sandbox con librerías
 
 <!-- badges: start -->
 <!-- badges: end -->
 
-Para convertir códigos en estructura tipo árbol
+Funciones útiles para el día a día
 ## Contributors
 -OFR.
