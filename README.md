@@ -1,12 +1,9 @@
 
-# Procesamiento
+# codigosEnarbol
 
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of Procesamiento is to ...
-
-Un repositorio que genera informes para estructuras del PRTR, 
-
+Para convertir códigos en estructura tipo árbol
 ## Contributors
--Odón F.
+-OFR.
