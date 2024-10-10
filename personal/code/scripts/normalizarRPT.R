@@ -40,6 +40,54 @@ datos <- read_excel(
   col_names = TRUE
 )
 
+### Eliminar últimas dos columnas, están repetidas en el último archivo enviado por RRHH
+
+datos <- datos %>% select(-(ncol(datos)-1): -ncol(datos))
+
+#### RENOMBRAR COLUMNAS ####
+
+datos <- datos %>%
+  rename(
+    códigoMinisterio = Ministerio,
+    nombreMinisterio = `Denominación Ministerio`,
+    codigoCentroDirectivo = C.Dir ,
+    nombreCentroDirectivo = `Denominación C.Dir`,
+    codigoUnidad = Unidad,
+    nombreUnidad = `Denominación Unidad`,
+    destUni = Dest.Uni.,
+    codigoPuesto = Puesto,
+    nombrePuesto = Denominación,
+    nivelFuncionario = Nivel,
+    complementeEspecifico = C.Espec.,
+    tipoPuesto = T.Pto.,
+    provision = Provis.,
+    adscripcionCuerpo = Ad.Pu.,
+    grupoPuesto = `Gr/Sb...15`,
+    reservaPuesto = Res.Pue.,
+    agregacionCuerpo = `Agr.cuer/cuer`,
+    formacion = `For.`,
+    titulacionPuesto = `Tit.`,
+    observaciones = `Obs.`,
+    dni = `DNI`,
+    nombre = `Nombre`,
+    apellido1 = `Apellido1`,
+    apellido2 = `Apellido2`,
+    grupoPersona = `Gr/Sb...25`,
+    vinculo = Vínculo,
+    tipoRelacionServicio = `Tipo RS`,
+    cuerpoDelFuncionario = `Cuerpo del efectivo`,
+    nombreCuerpoFuncionario = `Descripción del Cuerpo`,
+    fechaUltimoCesePuesto = `F.Último Cese`,
+    codigoSitAdm = Cód.Sit.Adm,
+    modSitAdm = Mod.Sit.Adm,
+    fechaNacimiento = F.Nacimiento,
+    sexo = `Sexo`,
+    fechaNombramiento = F.Nombramiento,
+    fechaUltimaPosesion = `F.Última Posesión`,
+    formaOcupacion = `Forma Ocupación...37`,
+    modalidadOcupacion = `Modalidad Ocupación...38`
+  )
+
 #### DISTINGUIR UNIDADES DE APOYO ####
 
 # Distinguimos entre UADGDATO, UADGDIA y UADGPETDANEL
@@ -49,13 +97,13 @@ codigo_uadgpetdanel <- "52554"
 
 datos <- datos %>%
   mutate(
-    `Denominación Unidad` = case_when(
-      Unidad == codigo_uadgdato ~ "UNIDAD DE APOYO DGDATO",
-      Unidad == codigo_uadgdia ~ "UNIDAD DE APOYO DGDIA",
-      Unidad == codigo_uadgpetdanel ~ "UNIDAD DE APOYO DGPETDANEL",
-      TRUE ~ `Denominación Unidad`
+      nombreUnidad = case_when(
+      codigoUnidad == codigo_uadgdato ~ "UNIDAD DE APOYO DGDATO",
+      codigoUnidad == codigo_uadgdia ~ "UNIDAD DE APOYO DGDIA",
+      codigoUnidad == codigo_uadgpetdanel ~ "UNIDAD DE APOYO DGPETDANEL",
+      TRUE ~ nombreUnidad)
     )
-  )
+  
 
 #### AGREGAR COLUMNAS ADICIONALES ####
 
@@ -63,73 +111,96 @@ datos <- datos %>%
   mutate(
     # Crear la columna 'unidad' con siglas de las unidades
     unidad = case_when(
-      `Denominación Unidad` == "GABINETE SECR. DE ESTADO" ~ "GSEDIA",
-      `Denominación Unidad` == "SECRETARIA SECR. DE ESTADO" ~ "SSEDIA",
-      `Denominación Unidad` == "UNIDAD DE APOYO" ~ "UA",
-      `Denominación Unidad` == "S.G. DE INTELIGENCIA ARTIFICIAL Y TECNOLOGIAS HABILITADORAS DIGITALES" ~ "SGIATHAD",
-      `Denominación Unidad` == "DIVISION DE ECONOMIA DIGITAL" ~ "DIVED",
-      `Denominación Unidad` == "S.G. PARA LA SOCIEDAD DIGITAL" ~ "SGSOD",
-      `Denominación Unidad` == "S.G. DE TALENTO Y EMPRENDIMIENTO DIGITAL" ~ "SGTED",
-      `Denominación Unidad` == "S.G. DE CIBERSEGURIDAD" ~ "SGCIBER",
-      `Denominación Unidad` == "DIVISION DE PLANIFIC. ESTRATEGICA EN TECNOLOGIAS DIGITALES AVANZADAS Y NUEVA ECONOMIA DE LA LENGUA" ~ "DIVPETDANEL",
-      `Denominación Unidad` == "UNIDAD DE APOYO DGDATO" ~ "UADGDATO",
-      `Denominación Unidad` == "UNIDAD DE APOYO DGPETDANEL" ~ "UADGPETDANEL",
-      `Denominación Unidad` == "UNIDAD DE APOYO DGDIA" ~ "UADGDIA",
-      `Denominación Unidad` == "S.G. PROGRAMAS, GOBERNANZA Y PROMOCION" ~ "SGPGOP",
-      `Denominación Unidad` == "DIVISION DE DISEÑO, INNOVACION Y EXPLOTACION" ~ "DIVDEDIE",
-      `Denominación Unidad` == "DIVISION DISEÑO,INNOVACION Y EXPLOTACION" ~ "DIVDIE",
-      `Denominación Unidad` == "S.G. DE AYUDAS" ~ "SGA",
-      `Denominación Unidad` == "DIVISION DE PLANIFICACION Y EJECUCION DE PROGRAMAS" ~ "DIVPEP",
-      `Denominación Unidad` == "UNIDAD TEMPORAL DEL PLAN DE RECUPERACION, TRANSFORMACION Y RESILIENCIA" ~ "UTPRTR",
-      TRUE ~ `Denominación Unidad` # Mantener el resto de los valores
-    ),
-    # Crear la columna 'unidadAdscripcionMadre' basada en la columna 'unidad'
+     nombreUnidad == "GABINETE SECR. DE ESTADO" ~ "GSEDIA",
+     nombreUnidad == "SECRETARIA SECR. DE ESTADO" ~ "SSEDIA",
+     nombreUnidad == "UNIDAD DE APOYO" ~ "UA",
+     nombreUnidad == "S.G. DE INTELIGENCIA ARTIFICIAL Y TECNOLOGIAS HABILITADORAS DIGITALES" ~ "SGIATHAD",
+     nombreUnidad == "DIVISION DE ECONOMIA DIGITAL" ~ "DIVED",
+     nombreUnidad == "S.G. PARA LA SOCIEDAD DIGITAL" ~ "SGSOD",
+     nombreUnidad == "S.G. DE TALENTO Y EMPRENDIMIENTO DIGITAL" ~ "SGTED",
+     nombreUnidad == "S.G. DE CIBERSEGURIDAD" ~ "SGCIBER",
+     nombreUnidad == "DIVISION DE PLANIFIC. ESTRATEGICA EN TECNOLOGIAS DIGITALES AVANZADAS Y NUEVA ECONOMIA DE LA LENGUA" ~ "DIVPETDANEL",
+     nombreUnidad == "UNIDAD DE APOYO DGDATO" ~ "UADGDATO",
+     nombreUnidad == "UNIDAD DE APOYO DGPETDANEL" ~ "UADGPETDANEL",
+     nombreUnidad == "UNIDAD DE APOYO DGDIA" ~ "UADGDIA",
+     nombreUnidad == "S.G. PROGRAMAS, GOBERNANZA Y PROMOCION" ~ "SGPGOP",
+     nombreUnidad == "DIVISION DE DISEÑO, INNOVACION Y EXPLOTACION" ~ "DIVDEDIE",
+     nombreUnidad == "DIVISION DISEÑO,INNOVACION Y EXPLOTACION" ~ "DIVDIE",
+     nombreUnidad == "S.G. DE AYUDAS" ~ "SGA",
+     nombreUnidad == "DIVISION DE PLANIFICACION Y EJECUCION DE PROGRAMAS" ~ "DIVPEP",
+     nombreUnidad == "UNIDAD TEMPORAL DEL PLAN DE RECUPERACION, TRANSFORMACION Y RESILIENCIA" ~ "UTPRTR",
+      TRUE ~ nombreUnidad # Mantener el resto de los valores
+    ))
+    
+datos <- datos %>%
+  mutate(
+   # Crear la columna 'unidadAdscripcionMadre' basada en la columna 'unidad'
     unidadAdscripcionMadre = case_when(
       unidad %in% c("GSEDIA", "SSEDIA", "UTPRTR", "DIVPEP", "SGA") ~ "SEDIA",
       unidad %in% c("UADGDATO", "DIVDIE", "DIVDEDIE", "SGPGOP") ~ "DGDATO",
       unidad %in% c("DIVPETDANEL", "UADGPETDANEL") ~ "DGPETDANEL",
       unidad %in% c("UADGDIA", "DIVED", "SGCIBER", "SGIATHAD", "SGSOD", "SGTED") ~ "DGDIA",
       TRUE ~ unidad # Mantener el resto de los valores
-    ),
+    )
+  )
+    
+    
+datos <- datos %>%
+  mutate(
     # Crear la columna 'situacionPuesto' basada en la columna 'unidad'
     situacionPuesto = case_when(
       # Ocupado
-      !is.na(DNI) & Vinculo %in% c(1, 2, 3) & is.na(Obs.) ~ "Ocupado",
+      !is.na(dni) & vinculo %in% c(1, 2, 3) & is.na(observaciones) ~ "Ocupado",
       # Reservado OCG - Funcionario en otro puesto
-      !is.na(DNI) & Vinculo %in% c(4, 6) & Obs. == "OCG" ~ "Reservado OCG - Funcionario en otro puesto",
+      !is.na(dni) & vinculo %in% c(4, 6) & observaciones == "OCG" ~ "Reservado OCG - Funcionario en otro puesto",
       # Libre no ocupable - Pendiente de finalizar proceso de selección
-      is.na(DNI) & is.na(Vinculo) & Obs. %in% c("OCG", "OEP") ~ "Libre no ocupable - Pendiente de finalizar proceso de selección",
+      is.na(dni) & is.na(vinculo) & observaciones %in% c("OCG", "OEP") ~ "Libre no ocupable - Pendiente de finalizar proceso de selección",
       # Reservado OEP - Funcionario en otro puesto
-      !is.na(DNI) & Vinculo %in% c(4, 6) & Obs. == "OEP" ~ "Reservado OEP - Funcionario en otro puesto",
+      !is.na(dni) & vinculo %in% c(4, 6) & observaciones == "OEP" ~ "Reservado OEP - Funcionario en otro puesto",
       # Reservado sin Observaciones - Funcionario en otro puesto
-      !is.na(DNI) & Vinculo %in% c(4, 6) & is.na(Obs.) ~ "Reservado sin observaciones - Funcionario en otro puesto",
+      !is.na(dni) & vinculo %in% c(4, 6) & is.na(observaciones) ~ "Reservado sin observaciones - Funcionario en otro puesto",
       # Reservado con Observaciones - Funcionario en otro puesto
-      !is.na(DNI) & Vinculo %in% c(4, 6) & !is.na(Obs.) ~ "Reservado con observaciones - Funcionario en otro puesto",
+      !is.na(dni) & vinculo %in% c(4, 6) & !is.na(observaciones) ~ "Reservado con observaciones - Funcionario en otro puesto",
       # Libre y ocupable sin restricciones
-      is.na(DNI) & is.na(Vinculo) & is.na(Obs.) ~ "Libre y ocupable sin observaciones", 
+      is.na(dni) & is.na(vinculo) & is.na(observaciones) ~ "Libre y ocupable sin observaciones", 
       # Libre y ocupable - Para funcionario con experiencia en proyectos
-      is.na(DNI) & is.na(Vinculo) & Obs. == "EJ4" ~ "Libre y ocupable - Sólo por funcionario con experiencia en proyectos", 
+      is.na(dni) & is.na(vinculo) & observaciones == "EJ4" ~ "Libre y ocupable - Sólo por funcionario con experiencia en proyectos", 
       # Ocupados con especificidades
-      !is.na(DNI) & Vinculo %in% c(1, 2, 3) & !is.na(Obs.) ~ "Ocupado con especificidades",
+      !is.na(dni) & vinculo %in% c(1, 2, 3) & !is.na(observaciones) ~ "Ocupado con especificidades",
       # Libre y ocupable pero con especificidades
-      is.na(DNI) & is.na(Vinculo) & !(Obs. %in% c("OCG", "OEP")) ~ "Libre y ocupable, pero con especificidades",
+      is.na(dni) & is.na(vinculo) & !(observaciones %in% c("OCG", "OEP")) ~ "Libre y ocupable, pero con especificidades",
       # Errores
       TRUE ~ "Error"
-    ),
+    ))
+    
+
+datos <- datos %>%
+  mutate(
     unidadPrestacionServicios = "",  # Creamos la columna vacía para añadir datos manualmente
     observacionesAdicionales = ""    # Creamos la columna vacía para añadir datos manualmente
   )
 
+
 #### ACTUALIZAR COLUMNA NOMBRE Y ELIMINAR PLAZAS NO NECESARIAS ####
 
 #Actualizar la columna 'Nombre' según la condición en 'situacionPuesto'
+# datos <- datos %>%
+#   mutate(
+#     Nombre = case_when(
+#       situacionPuesto == "Libre y ocupable sin observaciones" ~ "VACANTE",
+#       situacionPuesto == "Libre y ocupable - Sólo por funcionario con experiencia en proyectos" ~ "VACANTE Funcionario con Experiencia en proyectos",
+#       situacionPuesto == "Libre y ocupable, pero con especificidades" ~ "VACANTE con OBSERVACIONES",
+#       TRUE ~ Nombre  # Mantener el valor original de 'Nombre' para las demás filas
+#     )
+#   )
+
 datos <- datos %>%
   mutate(
-    Nombre = case_when(
+    nombre = case_when(
       situacionPuesto == "Libre y ocupable sin observaciones" ~ "VACANTE",
-      situacionPuesto == "Libre y ocupable - Sólo por funcionario con experiencia en proyectos" ~ "VACANTE Funcionario con Experiencia en proyectos",
-      situacionPuesto == "Libre y ocupable, pero con especificidades" ~ "VACANTE con OBSERVACIONES",
-      TRUE ~ Nombre  # Mantener el valor original de 'Nombre' para las demás filas
+      situacionPuesto == "Libre y ocupable - Sólo por funcionario con experiencia en proyectos" ~ "VACANTE",
+      situacionPuesto == "Libre y ocupable, pero con especificidades" ~ "VACANTE",
+      TRUE ~ nombre  # Mantener el valor original de 'Nombre' para las demás filas
     )
   )
 
@@ -155,62 +226,19 @@ datos <- datos %>%
 datos <- datos %>%
   select(
     unidadAdscripcionMadre,
-    `Denominación Unidad`,
     unidad,
     unidadPrestacionServicios,
-    Puesto,
-    Denominación,
-    Nivel,
-    `C.Esp.`,
-    Nombre,
-    Apellido1,
-    Apellido2,
-    DNI,
-    observacionesAdicionales,
+    nombrePuesto,
+    nivelFuncionario,
+    complementeEspecifico,
+    nombre,
+    apellido1,
+    apellido2,
+    dni, 
+    observaciones,
     everything()  # Mantiene el resto de las columnas en su orden original
   )
 
-#### RENOMBRAR COLUMNAS ####
-
-datos <- datos %>%
-  rename(
-    códigoMinisterio = `Minis.`,
-    nombreMinisterio = `Denominación Ministerio`,
-    codigoCentroDirectivo = `C.Dir`,
-    nombreCentroDirectivo = `Denominación C.Dir`,
-    codigoUnidad = `Unidad`,
-    nombreUnidad = `Denominación Unidad`,
-    destUni = `Dest.Uni.`,
-    codigoPuesto = `Puesto`,
-    nombrePuesto = `Denominación`,
-    nivelFuncionario = `Nivel`,
-    complementeEspecifico = `C.Esp.`,
-    tipoPuesto = `T.Pto`,
-    provision = `Provis.`,
-    adscripcionCuerpo = `Ad.Pu`,
-    grupoPuesto = `Gr/Sb.`,
-    reservaPuesto = `Res.Pue`,
-    agregacionCuerpo = `Agr.cuer/cuer`,
-    formacion = `For.`,
-    titulacionPuesto = `Tit.`,
-    observaciones = `Obs.`,
-    dni = `DNI`,
-    nombre = `Nombre`,
-    apellido1 = `Apellido1`,
-    apellido2 = `Apellido2`,
-    grupoPersona = `Gr/Sb.Vin`,
-    vinculo = `Vinculo`,
-    tipoRelacionServicio = `Tipo RS`,
-    cuerpoDelFuncionario = `Cuerpo del Efectivo`,
-    nombreCuerpoFuncionario = `Descripción del Cuerpo`,
-    fechaUltimoCesePuesto = `Fecha último cese`,
-    codigoSitAdm = `Cód. Sit. Adm.`,
-    modSitAdm = `Mod. Sit. Adm.`,
-    fechaNacimiento = `Fecha Nacimiento`,
-    sexo = `Sexo`,
-    fechaNombramiento = `Fecha Nombramiento`,
-    fechaUltimaPosesion = `F.Última Posesión`,
-  )
 
 # Actualizar la columna 'situacionPuesto' según la condición en 'dni'
 datos <- datos %>%

@@ -1415,7 +1415,10 @@ for (codigo in codigos) {
 # prtrSedia$Sort(function(node) node$name)
 Sort(raiz, "name")
 
-# Mostrar el árbol jerárquico
-print(raiz)
+sink("arbol_completo.txt")
 
+# Imprimir el árbol completo sin truncar usando maxLevel = Inf
+print(raiz, limit = NULL)
 
+# Volver a la consola
+sink(NULL)
